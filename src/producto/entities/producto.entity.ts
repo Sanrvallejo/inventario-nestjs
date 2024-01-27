@@ -1,7 +1,14 @@
 import { CategoriaEnum } from 'src/enums/categoria.enum';
 import { Medida } from 'src/enums/medida.enum';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { VentasProductos } from 'src/ventas/entities/ventas-productos.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Producto {
@@ -47,6 +54,6 @@ export class Producto {
   )
   ventasProductos: VentasProductos[];
 
-  //TODO: Usuario
-
+  @ManyToOne(() => Usuario, (usuario) => usuario.producto, { eager: true })
+  usuario: Usuario;
 }
