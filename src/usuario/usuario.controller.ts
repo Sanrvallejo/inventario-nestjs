@@ -1,34 +1,45 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { AdminAccess } from 'src/auth/decorators/admin.decorator';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 
-@Controller('usuario')
-export class UsuarioController {
-  constructor(private readonly usuarioService: UsuarioService) {}
+@Controller('user')
+@UseGuards(AuthGuard, RolesGuard)
+export class UserController {
+    constructor(
+        private readonly usuario: UsuarioService,
+    ){};
 
-  @Post()
-  create(@Body() createUsuarioDto: CreateUsuarioDto) {
-    return this.usuarioService.create(createUsuarioDto);
-  }
+    @AdminAccess()
+    @Post('crear')
+    async createUser(@Body() body: CreateUsuarioDto) {
+        return await this.usuario.create(body);
+    }
 
-  @Get()
-  findAll() {
-    return this.usuarioService.findAll();
-  }
+    @AdminAccess()
+    @Get('all')
+    async findAllUsers() {
+        return await this.usuario.findUsers();
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usuarioService.findOne(+id);
-  }
+    @AdminAccess()
+    @Get(':id')
+    async findUserById(@Param('id') id: string) {
+        return await this.usuario.findUserById(id);
+    }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuarioService.update(+id, updateUsuarioDto);
-  }
+    @AdminAccess()
+    @Put('edit/:id')
+    async updateUser(@Param('id') id: string, @Body() body: UpdateUsuarioDto) {
+        return await this.usuario.updateUser(body, id);
+    } 
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usuarioService.remove(+id);
-  }
+    @AdminAccess()
+    @Delete('/delete/:id')
+    async deleteUser(@Param('id') id: string) {
+        return await this.usuario.deleteUser(id);
+    }
 }

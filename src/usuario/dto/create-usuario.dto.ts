@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { Rol } from 'src/enums/rol.enum';
 
-export class CreateUserDto {
+export class CreateUsuarioDto {
   @IsNotEmpty()
   @IsString()
   nombre: string;

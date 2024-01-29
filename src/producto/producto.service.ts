@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Producto } from './entities/producto.entity';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 @Injectable()
 export class ProductoService {
   constructor(
@@ -9,14 +10,18 @@ export class ProductoService {
     private productoRepository: Repository<Producto>,
   ) {}
 
-  async findAll(): Promise<Producto[]> {
-    return await this.productoRepository.find();
-  }
-
-  async findById(codigo: number): Promise<Producto> {
+  async findAll(usuarioId: string): Promise<Producto[]> {
     return await this.productoRepository
       .createQueryBuilder('producto')
-      .where('producto.codigoBarra = :codigo', { codigo })
+      .where('producto.usuario_id = :usuarioId', { usuarioId })
+      .getMany();
+  }
+
+  async findById(codigo: number, usuario: Usuario): Promise<Producto> {
+    return await this.productoRepository
+      .createQueryBuilder('producto')
+      .where('producto.usuarioId = :usuario', { usuario })
+      .andWhere('producto.codigoBarra = :codigo', { codigo })
       .getOne();
   }
 
@@ -24,10 +29,11 @@ export class ProductoService {
     await this.productoRepository.update(id, producto);
   }
 
-  async create(producto: Producto): Promise<Producto> {
+  async create(producto: Producto, usuario: Usuario): Promise<Producto> {
     //producto.cantidadActual = 0;
     producto.cantidadActual =
       (producto.cantidadActual ?? 0) + producto.cantidadIngresada;
+    producto.usuario = usuario;
     return this.productoRepository.save(producto);
   }
 

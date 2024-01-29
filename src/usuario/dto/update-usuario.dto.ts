@@ -1,7 +1,7 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { Rol } from 'src/enums/rol.enum';
 
-export class UpdateUserDto {
+export class UpdateUsuarioDto {
   @IsOptional()
   @IsString()
   nombre: string;
